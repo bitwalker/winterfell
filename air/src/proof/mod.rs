@@ -178,7 +178,7 @@ impl StarkProof {
 // ================================================================================================
 
 impl Serializable for StarkProof {
-    fn write_into<W: utils::ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + utils::ByteWriter>(&self, target: &mut W) {
         self.context.write_into(target);
         target.write_u8(self.num_unique_queries);
         self.commitments.write_into(target);
@@ -191,7 +191,7 @@ impl Serializable for StarkProof {
 }
 
 impl Deserializable for StarkProof {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let context = Context::read_from(source)?;
         let num_unique_queries = source.read_u8()?;
         let commitments = Commitments::read_from(source)?;

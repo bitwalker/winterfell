@@ -91,7 +91,7 @@ impl Commitments {
 
 impl Serializable for Commitments {
     /// Serializes `self` and writes the resulting bytes into the `target`.
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         assert!(self.0.len() < u16::MAX as usize);
         target.write_u16(self.0.len() as u16);
         target.write_bytes(&self.0);
@@ -109,7 +109,7 @@ impl Deserializable for Commitments {
     /// # Errors
     /// Returns an error of a valid Commitments struct could not be read from the specified
     /// `source`.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let num_bytes = source.read_u16()? as usize;
         let result = source.read_vec(num_bytes)?;
         Ok(Commitments(result))

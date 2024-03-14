@@ -116,13 +116,13 @@ impl<const N: usize> Default for ByteDigest<N> {
 }
 
 impl<const N: usize> Serializable for ByteDigest<N> {
-    fn write_into<W: utils::ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + utils::ByteWriter>(&self, target: &mut W) {
         target.write_bytes(&self.0);
     }
 }
 
 impl<const N: usize> Deserializable for ByteDigest<N> {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         Ok(ByteDigest(source.read_array()?))
     }
 }

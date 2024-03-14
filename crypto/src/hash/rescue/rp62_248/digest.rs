@@ -54,13 +54,13 @@ impl Default for ElementDigest {
 }
 
 impl Serializable for ElementDigest {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_bytes(&self.as_bytes()[..31]);
     }
 }
 
 impl Deserializable for ElementDigest {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let v1 = source.read_u64()?;
         let v2 = source.read_u64()?;
         let v3 = source.read_u64()?;

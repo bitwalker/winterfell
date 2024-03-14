@@ -50,13 +50,13 @@ impl Default for ElementDigest {
 }
 
 impl Serializable for ElementDigest {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_bytes(&self.as_bytes());
     }
 }
 
 impl Deserializable for ElementDigest {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         // TODO: check if the field elements are valid?
         let e1 = BaseElement::new(source.read_u64()?);
         let e2 = BaseElement::new(source.read_u64()?);

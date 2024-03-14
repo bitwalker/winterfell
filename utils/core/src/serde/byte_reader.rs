@@ -175,7 +175,6 @@ pub trait ByteReader {
     /// Returns a [DeserializationError] if the specified value could not be read from `self`.
     fn read<D>(&mut self) -> Result<D, DeserializationError>
     where
-        Self: Sized,
         D: Deserializable,
     {
         D::read_from(self)
@@ -189,7 +188,6 @@ pub trait ByteReader {
     /// `self`.
     fn read_many<D>(&mut self, num_elements: usize) -> Result<Vec<D>, DeserializationError>
     where
-        Self: Sized,
         D: Deserializable,
     {
         let mut result = Vec::with_capacity(num_elements);

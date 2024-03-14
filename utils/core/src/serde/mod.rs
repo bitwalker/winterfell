@@ -28,7 +28,7 @@ pub trait Serializable {
     // REQUIRED METHODS
     // --------------------------------------------------------------------------------------------
     /// Serializes `self` into bytes and writes these bytes into the `target`.
-    fn write_into<W: ByteWriter>(&self, target: &mut W);
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W);
 
     // PROVIDED METHODS
     // --------------------------------------------------------------------------------------------
@@ -49,20 +49,20 @@ pub trait Serializable {
 }
 
 impl<T: Serializable> Serializable for &T {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         (*self).write_into(target)
     }
 }
 
 impl Serializable for () {
-    fn write_into<W: ByteWriter>(&self, _target: &mut W) {}
+    fn write_into<W: ?Sized + ByteWriter>(&self, _target: &mut W) {}
 }
 
 impl<T1> Serializable for (T1,)
 where
     T1: Serializable,
 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         self.0.write_into(target);
     }
 }
@@ -72,7 +72,7 @@ where
     T1: Serializable,
     T2: Serializable,
 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         self.0.write_into(target);
         self.1.write_into(target);
     }
@@ -84,7 +84,7 @@ where
     T2: Serializable,
     T3: Serializable,
 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         self.0.write_into(target);
         self.1.write_into(target);
         self.2.write_into(target);
@@ -98,7 +98,7 @@ where
     T3: Serializable,
     T4: Serializable,
 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         self.0.write_into(target);
         self.1.write_into(target);
         self.2.write_into(target);
@@ -114,7 +114,7 @@ where
     T4: Serializable,
     T5: Serializable,
 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         self.0.write_into(target);
         self.1.write_into(target);
         self.2.write_into(target);
@@ -132,7 +132,7 @@ where
     T5: Serializable,
     T6: Serializable,
 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         self.0.write_into(target);
         self.1.write_into(target);
         self.2.write_into(target);
@@ -143,43 +143,43 @@ where
 }
 
 impl Serializable for u8 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_u8(*self);
     }
 }
 
 impl Serializable for u16 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_u16(*self);
     }
 }
 
 impl Serializable for u32 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_u32(*self);
     }
 }
 
 impl Serializable for u64 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_u64(*self);
     }
 }
 
 impl Serializable for u128 {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_u128(*self);
     }
 }
 
 impl Serializable for usize {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_usize(*self)
     }
 }
 
 impl<T: Serializable> Serializable for Option<T> {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         match self {
             Some(v) => {
                 target.write_bool(true);
@@ -191,34 +191,34 @@ impl<T: Serializable> Serializable for Option<T> {
 }
 
 impl<T: Serializable, const C: usize> Serializable for [T; C] {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_many(self)
     }
 }
 
 impl<T: Serializable> Serializable for Vec<T> {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_usize(self.len());
         target.write_many(self);
     }
 }
 
 impl<K: Serializable, V: Serializable> Serializable for BTreeMap<K, V> {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_usize(self.len());
         target.write_many(self);
     }
 }
 
 impl<T: Serializable> Serializable for BTreeSet<T> {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_usize(self.len());
         target.write_many(self);
     }
 }
 
 impl Serializable for String {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_usize(self.len());
         target.write_many(self.as_bytes());
     }
@@ -239,7 +239,9 @@ pub trait Deserializable: Sized {
     /// Returns an error if:
     /// * The `source` does not contain enough bytes to deserialize `Self`.
     /// * Bytes read from the `source` do not represent a valid value for `Self`.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError>;
+    fn read_from<R>(source: &mut R) -> Result<Self, DeserializationError>
+    where
+        R: ?Sized + ByteReader;
 
     // PROVIDED METHODS
     // --------------------------------------------------------------------------------------------
@@ -259,7 +261,7 @@ pub trait Deserializable: Sized {
 }
 
 impl Deserializable for () {
-    fn read_from<R: ByteReader>(_source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(_source: &mut R) -> Result<Self, DeserializationError> {
         Ok(())
     }
 }
@@ -268,7 +270,7 @@ impl<T1> Deserializable for (T1,)
 where
     T1: Deserializable,
 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let v1 = T1::read_from(source)?;
         Ok((v1,))
     }
@@ -279,7 +281,7 @@ where
     T1: Deserializable,
     T2: Deserializable,
 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let v1 = T1::read_from(source)?;
         let v2 = T2::read_from(source)?;
         Ok((v1, v2))
@@ -292,7 +294,7 @@ where
     T2: Deserializable,
     T3: Deserializable,
 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let v1 = T1::read_from(source)?;
         let v2 = T2::read_from(source)?;
         let v3 = T3::read_from(source)?;
@@ -307,7 +309,7 @@ where
     T3: Deserializable,
     T4: Deserializable,
 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let v1 = T1::read_from(source)?;
         let v2 = T2::read_from(source)?;
         let v3 = T3::read_from(source)?;
@@ -324,7 +326,7 @@ where
     T4: Deserializable,
     T5: Deserializable,
 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let v1 = T1::read_from(source)?;
         let v2 = T2::read_from(source)?;
         let v3 = T3::read_from(source)?;
@@ -343,7 +345,7 @@ where
     T5: Deserializable,
     T6: Deserializable,
 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let v1 = T1::read_from(source)?;
         let v2 = T2::read_from(source)?;
         let v3 = T3::read_from(source)?;
@@ -355,43 +357,43 @@ where
 }
 
 impl Deserializable for u8 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         source.read_u8()
     }
 }
 
 impl Deserializable for u16 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         source.read_u16()
     }
 }
 
 impl Deserializable for u32 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         source.read_u32()
     }
 }
 
 impl Deserializable for u64 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         source.read_u64()
     }
 }
 
 impl Deserializable for u128 {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         source.read_u128()
     }
 }
 
 impl Deserializable for usize {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         source.read_usize()
     }
 }
 
 impl<T: Deserializable> Deserializable for Option<T> {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let contains = source.read_bool()?;
 
         match contains {
@@ -402,7 +404,7 @@ impl<T: Deserializable> Deserializable for Option<T> {
 }
 
 impl<T: Deserializable, const C: usize> Deserializable for [T; C] {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let data: Vec<T> = source.read_many(C)?;
 
         // SAFETY: the call above only returns a Vec if there are `C` elements, this conversion
@@ -416,14 +418,14 @@ impl<T: Deserializable, const C: usize> Deserializable for [T; C] {
 }
 
 impl<T: Deserializable> Deserializable for Vec<T> {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let len = source.read_usize()?;
         source.read_many(len)
     }
 }
 
 impl<K: Deserializable + Ord, V: Deserializable> Deserializable for BTreeMap<K, V> {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let len = source.read_usize()?;
         let data = source.read_many(len)?;
         Ok(BTreeMap::from_iter(data))
@@ -431,7 +433,7 @@ impl<K: Deserializable + Ord, V: Deserializable> Deserializable for BTreeMap<K, 
 }
 
 impl<T: Deserializable + Ord> Deserializable for BTreeSet<T> {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let len = source.read_usize()?;
         let data = source.read_many(len)?;
         Ok(BTreeSet::from_iter(data))
@@ -439,7 +441,7 @@ impl<T: Deserializable + Ord> Deserializable for BTreeSet<T> {
 }
 
 impl Deserializable for String {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let len = source.read_usize()?;
         let data = source.read_many(len)?;
 

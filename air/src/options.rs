@@ -226,7 +226,7 @@ impl<E: StarkField> ToElements<E> for ProofOptions {
 
 impl Serializable for ProofOptions {
     /// Serializes `self` and writes the resulting bytes into the `target`.
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_u8(self.num_queries);
         target.write_u8(self.blowup_factor);
         target.write_u8(self.grinding_factor);
@@ -241,7 +241,7 @@ impl Deserializable for ProofOptions {
     ///
     /// # Errors
     /// Returns an error of a valid proof options could not be read from the specified `source`.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         Ok(ProofOptions::new(
             source.read_u8()? as usize,
             source.read_u8()? as usize,
@@ -277,7 +277,7 @@ impl FieldExtension {
 
 impl Serializable for FieldExtension {
     /// Serializes `self` and writes the resulting bytes into the `target`.
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_u8(*self as u8);
     }
 
@@ -289,7 +289,7 @@ impl Serializable for FieldExtension {
 
 impl Deserializable for FieldExtension {
     /// Reads a field extension enum from the specified `source`.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         match source.read_u8()? {
             1 => Ok(FieldExtension::None),
             2 => Ok(FieldExtension::Quadratic),

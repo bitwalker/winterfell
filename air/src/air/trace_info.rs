@@ -294,7 +294,7 @@ impl<E: StarkField> ToElements<E> for TraceLayout {
 
 impl Serializable for TraceLayout {
     /// Serializes `self` and writes the resulting bytes into the `target`.
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_u8(self.main_segment_width as u8);
         for &w in self.aux_segment_widths.iter() {
             debug_assert!(w <= u8::MAX as usize, "aux segment width does not fit into u8 value");
@@ -316,7 +316,7 @@ impl Deserializable for TraceLayout {
     /// # Errors
     /// Returns an error of a valid [TraceLayout] struct could not be read from the specified
     /// `source`.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let main_width = source.read_u8()? as usize;
         if main_width == 0 {
             return Err(DeserializationError::InvalidValue(

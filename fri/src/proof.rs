@@ -185,7 +185,7 @@ impl FriProof {
 
 impl Serializable for FriProof {
     /// Serializes `self` and writes the resulting bytes into the `target` writer.
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         // write layers
         target.write_u8(self.layers.len() as u8);
         for layer in self.layers.iter() {
@@ -206,7 +206,7 @@ impl Deserializable for FriProof {
     ///
     /// # Errors
     /// Returns an error if a valid proof could not be read from the source.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         // read layers
         let num_layers = source.read_u8()? as usize;
         let layers = source.read_many(num_layers)?;
@@ -338,7 +338,7 @@ impl FriProofLayer {
 
 impl Serializable for FriProofLayer {
     /// Serializes this proof layer and writes the resulting bytes to the specified `target`.
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         // write value bytes
         target.write_u32(self.values.len() as u32);
         target.write_bytes(&self.values);
@@ -354,7 +354,7 @@ impl Deserializable for FriProofLayer {
     ///
     /// # Errors
     /// Returns an error if a valid layer could not be read from the specified source.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         // read values
         let num_value_bytes = source.read_u32()?;
         if num_value_bytes == 0 {

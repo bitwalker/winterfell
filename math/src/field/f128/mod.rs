@@ -396,13 +396,13 @@ impl AsBytes for BaseElement {
 // ------------------------------------------------------------------------------------------------
 
 impl Serializable for BaseElement {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write_bytes(&self.0.to_le_bytes());
     }
 }
 
 impl Deserializable for BaseElement {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let value = source.read_u128()?;
         if value >= M {
             return Err(DeserializationError::InvalidValue(format!(

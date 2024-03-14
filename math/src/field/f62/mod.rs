@@ -521,14 +521,14 @@ impl AsBytes for BaseElement {
 // ------------------------------------------------------------------------------------------------
 
 impl Serializable for BaseElement {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         // convert from Montgomery representation into canonical representation
         target.write_bytes(&self.as_int().to_le_bytes());
     }
 }
 
 impl Deserializable for BaseElement {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let value = source.read_u64()?;
         if value >= M {
             return Err(DeserializationError::InvalidValue(format!(

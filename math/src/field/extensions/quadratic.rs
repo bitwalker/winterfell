@@ -375,14 +375,14 @@ impl<B: ExtensibleField<2>> AsBytes for QuadExtension<B> {
 // ------------------------------------------------------------------------------------------------
 
 impl<B: ExtensibleField<2>> Serializable for QuadExtension<B> {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         self.0.write_into(target);
         self.1.write_into(target);
     }
 }
 
 impl<B: ExtensibleField<2>> Deserializable for QuadExtension<B> {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let value0 = B::read_from(source)?;
         let value1 = B::read_from(source)?;
         Ok(Self(value0, value1))

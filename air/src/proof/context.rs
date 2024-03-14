@@ -149,7 +149,7 @@ impl<E: StarkField> ToElements<E> for Context {
 
 impl Serializable for Context {
     /// Serializes `self` and writes the resulting bytes into the `target`.
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         self.trace_layout.write_into(target);
         target.write_u8(self.trace_length.ilog2() as u8); // store as power of two
         target.write_u16(self.trace_meta.len() as u16);
@@ -166,7 +166,7 @@ impl Deserializable for Context {
     ///
     /// # Errors
     /// Returns an error of a valid Context struct could not be read from the specified `source`.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         // read and validate trace layout info
         let trace_layout = TraceLayout::read_from(source)?;
 

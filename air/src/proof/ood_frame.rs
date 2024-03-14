@@ -123,7 +123,7 @@ impl OodFrame {
 
 impl Serializable for OodFrame {
     /// Serializes `self` and writes the resulting bytes into the `target`.
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         // write trace rows
         target.write_u16(self.trace_states.len() as u16);
         target.write_bytes(&self.trace_states);
@@ -144,7 +144,7 @@ impl Deserializable for OodFrame {
     ///
     /// # Errors
     /// Returns an error of a valid OOD frame could not be read from the specified `source`.
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         // read trace rows
         let num_trace_state_bytes = source.read_u16()? as usize;
         let trace_states = source.read_vec(num_trace_state_bytes)?;

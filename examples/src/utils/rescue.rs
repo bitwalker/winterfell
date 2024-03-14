@@ -157,14 +157,14 @@ impl Digest for Hash {
 }
 
 impl Serializable for Hash {
-    fn write_into<W: ByteWriter>(&self, target: &mut W) {
+    fn write_into<W: ?Sized + ByteWriter>(&self, target: &mut W) {
         target.write(self.0[0]);
         target.write(self.0[1]);
     }
 }
 
 impl Deserializable for Hash {
-    fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
+    fn read_from<R: ?Sized + ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let v1 = BaseElement::read_from(source)?;
         let v2 = BaseElement::read_from(source)?;
         Ok(Self([v1, v2]))
